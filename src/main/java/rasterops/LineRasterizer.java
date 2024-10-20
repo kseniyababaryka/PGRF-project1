@@ -1,5 +1,7 @@
 package rasterops;
 
+// Abstraktni trida pro rasterizace usecky
+
 import rasterdata.RasterBufferedImage;
 
 public abstract class LineRasterizer {
