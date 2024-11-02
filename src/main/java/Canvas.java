@@ -3,6 +3,7 @@ import objectdata.Polygon;
 import rasterdata.RasterBufferedImage;
 import rasterops.FilledLineRasterizer;
 import rasterops.PolygonRasterizer;
+import rasterops.SeedFill;
 import rasterops.ThickLineRasterizer;
 
 import javax.swing.*;
@@ -30,6 +31,9 @@ public class Canvas {
     private Polygon polygon;
     private PolygonRasterizer polygoner;
     private boolean shiftmode;
+    private boolean linerMode = true;
+
+    private SeedFill seedFill;
 
     public Canvas(int width, int height){
         frame = new JFrame();
@@ -43,6 +47,7 @@ public class Canvas {
         polygon = new Polygon();
         polygoner = new PolygonRasterizer();
         thickLiner = new ThickLineRasterizer();
+        seedFill = new SeedFill();
 
 
         panel = new JPanel() {
@@ -52,6 +57,11 @@ public class Canvas {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 present(g);
+                g.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+                g.setColor(Color.WHITE);
+                g.drawString("L - for line drawing, P - for polygon drawing", 20, 30);
+                g.drawString("Shift pressed - for vertical, horizontal and diagonal lines", 20, 60);
+                g.drawString("C - for clear everything", 20, 90);
             }
         };
         panel.setPreferredSize(new Dimension(width, height));
@@ -93,13 +103,19 @@ public class Canvas {
                     }
                 }
 
-                polygoner.drawPolygon(img, thickLiner, polygon, 0xffff);
-                if (polygon.size() > 0) {
-                    liner.drawLine(img, polygon.getPoint(polygon.size() - 1).getC1(),
-                            polygon.getPoint(polygon.size() - 1).getR1(),
-                            c2, r2, 0xff00ff);
+                if(linerMode){
+                    liner.drawLine(img, c1, r1, c2, r2, 0xffff);
+                } else {
+                    polygoner.drawPolygon(img, thickLiner, polygon, 0xffff);
+                    if (polygon.size() > 0) {
+                        liner.drawLine(img, polygon.getPoint(polygon.size() - 1).getC1(),
+                                polygon.getPoint(polygon.size() - 1).getR1(),
+                                c2, r2, 0xff00ff);
+                    }
+                    liner.drawLine(img, polygon.getPoint(0).getC1(), polygon.getPoint(0).getR1(), c2, r2, 0xffff);
                 }
-                liner.drawLine(img, polygon.getPoint(0).getC1(), polygon.getPoint(0).getR1(), c2, r2, 0xffff);
+
+
                 panel.repaint();
 
             }
@@ -110,14 +126,28 @@ public class Canvas {
             public void mousePressed(MouseEvent e) {
                 c1 = e.getX();
                 r1 = e.getY();
+
+                if (e.getButton() == MouseEvent.BUTTON1){
+                    polygon.addPoint(new Point2D(e.getX(), e.getY()));
+                }
+
+                if (e.getButton() == MouseEvent.BUTTON3){
+                    if(!linerMode){
+                        seedFill.fill(img,c1,r1,0x2f2f2f, 0xffff00,0xffff);
+                    }
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 x = e.getX();
                 y = e.getY();
-                polygon.addPoint(new Point2D(e.getX(), e.getY()));
-                polygoner.drawPolygon(img, thickLiner, polygon, 0xffff);
+
+                if(!linerMode){
+
+                    polygoner.drawPolygon(img, thickLiner, polygon, 0xffff);
+                }
+
                 panel.repaint();
             }
         });
@@ -132,6 +162,14 @@ public class Canvas {
                 if (e.getKeyCode() == KeyEvent.VK_C){
                     clear();
                     panel.repaint();
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_L){
+                    linerMode = true;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_P){
+                    linerMode = false;
                 }
             }
 
