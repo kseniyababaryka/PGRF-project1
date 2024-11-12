@@ -6,6 +6,7 @@ package objectdata;
 
 
 
+import objectdata.Line;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,4 +36,16 @@ public class Polygon {
         return points.size(); //Vraci pocet vrcholu (bodu) polygonu
     }
 
+    public List<Line> toLines() {
+        List<Line> lines = new ArrayList<>();
+        for (int i = 0; i < points.size(); i++) {
+            Point2D nextPoint = points.get((i + 1) % points.size());
+            lines.add(new Line(points.get(i), nextPoint));
+        }
+        return lines;
+    }
+
+    public List<Point2D> getPoints() {
+        return points;
+    }
 }
