@@ -10,11 +10,11 @@ public class Rectangle extends Polygon {
         int top = Math.min(r1, r2);
         int bottom = Math.max(r1, r2);
 
-        // Добавляем вершины прямоугольника по часовой стрелке
-        addPoint(new Point2D(left, top));     // Левый верхний угол
-        addPoint(new Point2D(right, top));    // Правый верхний угол
-        addPoint(new Point2D(right, bottom)); // Правый нижний угол
-        addPoint(new Point2D(left, bottom));  // Левый нижний угол
+
+        addPoint(new Point2D(left, top));
+        addPoint(new Point2D(right, top));
+        addPoint(new Point2D(right, bottom));
+        addPoint(new Point2D(left, bottom));
     }
 
     public int getLeft() {

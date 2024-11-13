@@ -16,7 +16,7 @@ public class SutherlandHodgman {
             return points;
         } else {
             List<Point2D> newPoints = points;
-            Point2D p1 = (Point2D)clipPoints.get(clipPoints.size() - 1);
+            Point2D p1 = clipPoints.get(clipPoints.size() - 1);
 
             Point2D p2;
             for(Iterator var6 = clipPoints.iterator(); var6.hasNext(); p1 = p2) {
@@ -29,31 +29,7 @@ public class SutherlandHodgman {
         }
     }
 
-//    private List<Point2D> clipEdge(List<Point2D> points, Line e) {
-//        if (points.size() < 2) {
-//            return points;
-//        } else {
-//            List<Point2D> out = new ArrayList();
-//            out.clear();
-//            Point2D v1 = (Point2D)points.get(points.size() - 1);
-//
-//            Point2D v2;
-//            for(Iterator var6 = points.iterator(); var6.hasNext(); v1 = v2) {
-//                v2 = (Point2D)var6.next();
-//                if (e.inside(v2)) {
-//                    if (!e.inside(v1)) {
-//                        out.add(e.intersection(v1, v2));
-//                    }
-//
-//                    out.add(v2);
-//                } else if (e.inside(v1)) {
-//                    out.add(e.intersection(v1, v2));
-//                }
-//            }
-//
-//            return out;
-//        }
-//    }
+
 
     private List<Point2D> clipEdge(List<Point2D> points, Line e) {
         if (points.size() < 2) {
@@ -62,21 +38,16 @@ public class SutherlandHodgman {
 
         List<Point2D> out = new ArrayList<>();
         out.clear();
-
-        // Get the last point in input list
         Point2D s = points.get(points.size() - 1);
 
-        // Process all vertices
+
         for (Point2D p : points) {
-            if (e.inside(p)) { // If current point is inside
-                if (!e.inside(s)) { // If previous point was outside
-                    // Add intersection point
+            if (e.inside(p)) {
+                if (!e.inside(s)) {
                     out.add(e.intersection(s, p));
                 }
-                // Add current point
                 out.add(p);
-            } else if (e.inside(s)) { // If current point is outside but previous was inside
-                // Add intersection point
+            } else if (e.inside(s)) {
                 out.add(e.intersection(s, p));
             }
             s = p;

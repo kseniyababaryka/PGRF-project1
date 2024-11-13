@@ -165,7 +165,11 @@ public class Canvas {
                 Point2D newPoint = new Point2D(c1, r1);
 
                 if (e.getButton() == 1) {
-                    polygon.addPoint(newPoint);
+                    if(seedfillMode){
+                        seedFill.fill(img,e.getX(), e.getY(), 0x2f2f2f, 0x00ff00, 0xffff);
+                        seedfillMode = false;
+
+                    } else polygon.addPoint(newPoint);
                 }
 
                 if (e.getButton() == 3) {
@@ -178,22 +182,13 @@ public class Canvas {
                     } else {
                         System.out.println("Point rejected, would make polygon non-convex.");
                     }
+                    clear();
+                    updateClippingAndFill();
                 }
 
-                clear();
-                updateClippingAndFill();
+
                 panel.repaint();
 
-
-//                } else {
-//                    // Add points to the user polygon
-//                    polygon.addPoint(new Point2D(c1, r1));
-//                    System.out.println("Added point to user polygon: (" + c1 + ", " + r1 + ")");
-//                    clear();
-//                    polygoner.drawPolygon(img, thickLiner, polygon, 0xffff);
-//                    polygoner.drawPolygon(img, thickLiner, cuttingPolygon, 0xff00ff);
-//                }
-//                panel.repaint();
             }
 
             @Override
@@ -201,19 +196,7 @@ public class Canvas {
                 x = e.getX();
                 y = e.getY();
 
-//                if (e.getButton() == 1) {
-//                    Canvas.this.points.add(new Point2D(e.getX(), e.getY()));
-//                }
-//
-//                if (e.getButton() == 3) {
-//                    Point2D p = new Point2D(e.getX(), e.getY());
-//                    Line edge = new Line(Canvas.this.clipPoints.get(Canvas.this.clipPoints.size() - 1), Canvas.this.clipPoints.get(0));
-//                    Line edge1 = new Line(Canvas.this.clipPoints.get(0), Canvas.this.clipPoints.get(1));
-//                    Line edge2 = new Line(Canvas.this.clipPoints.get(Canvas.this.clipPoints.size() - 2), Canvas.this.clipPoints.get(Canvas.this.clipPoints.size() - 1));
-//                    if (!edge.inside(p) && edge1.inside(p) && edge2.inside(p)) {
-//                        Canvas.this.clipPoints.add(p);
-//                    }
-//                }
+
 
                 if(ellipseMode){
                     if (polygon.size() > 1){
@@ -221,15 +204,8 @@ public class Canvas {
                         polygoner.drawElipse(img, ellipse, 0xff0000);
                         polygon = new Polygon();
                     }
-                } else if(seedfillMode){
-
-                    seedFill.fill(img,e.getX(), e.getY(), 0x2f2f2f, 0xff0000, 0xffff);
                 }
-//                if(!linerMode && !rectangleMode && !ellipseMode) {
-//
-//                    polygoner.drawPolygon(img, thickLiner, polygon, 0xffff);
-//                    polygoner.drawPolygon(img, thickLiner, cuttingPolygon, 0xff00ff);
-//                }
+
 
                 panel.repaint();
             }
@@ -247,7 +223,6 @@ public class Canvas {
                     panel.repaint();
                     polygon = new Polygon();
                     cuttingPolygon = new Polygon();
-                    // Re-draw the cutting polygon on clear
                     cuttingPolygon.addPoint(new Point2D(10, 200));
                     cuttingPolygon.addPoint(new Point2D(100, 600));
                     cuttingPolygon.addPoint(new Point2D(500, 500));
@@ -308,7 +283,7 @@ public class Canvas {
 
     }
     private boolean isConvexPolygon(List<Point2D> points) {
-        if (points.size() < 4) return true; // Треугольник всегда выпуклый
+        if (points.size() < 4) return true;
 
         boolean sign = false;
         for (int i = 0; i < points.size(); i++) {
@@ -327,17 +302,16 @@ public class Canvas {
         return true;
     }
     private void updateClippingAndFill() {
-        // Draw the clipping polygon in magenta
         polygoner.drawPolygon(img, new ThickLineRasterizer(), cuttingPolygon, 0xff00ff);
 
-        // Perform clipping of the user polygon with the clipping polygon
+
         List<Point2D> clippedPoints = cutter.clip(polygon.getPoints(), cuttingPolygon.getPoints());
 
-        // Convert clipped points back to a polygon for drawing
+
         clippedPolygon = new Polygon();
         clippedPoints.forEach(clippedPolygon::addPoint);
 
-        // Fill the clipped polygon with ScanLine if it has a valid intersection
+
         if (clippedPolygon.size() > 2) {
             System.out.println("Clipping successful with points: " + clippedPoints);
 
@@ -347,7 +321,6 @@ public class Canvas {
             System.out.println("Clipping failed");
         }
 
-        // Draw the user polygon in white
         polygoner.drawPolygon(img, new ThickLineRasterizer(), polygon, 0xffff);
     }
 
@@ -361,12 +334,12 @@ public class Canvas {
 
     public void start(){
         clear();
-        // Initialize the cutting polygon (e.g., a simple square for clipping)
+
         cuttingPolygon.addPoint(new Point2D(100, 100));
         cuttingPolygon.addPoint(new Point2D(100, 600));
         cuttingPolygon.addPoint(new Point2D(500, 500));
 
-        // Draw the cutting polygon on the canvas at the beginning
+
         polygoner.drawPolygon(img, thickLiner, cuttingPolygon, 0xff00ff);
         panel.repaint();
     }

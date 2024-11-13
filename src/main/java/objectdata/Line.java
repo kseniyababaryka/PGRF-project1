@@ -18,9 +18,7 @@ public class Line {
         this.end = new Point2D(x2,y2);
     }
 
-//    public Line withStart(Point2D point){
-//        return new Line(point, this.end);
-//    }
+
 
 
 
@@ -67,13 +65,7 @@ public class Line {
         return n1.getC1() * v2.getC1() + n1.getR1() * v2.getR1() < 0.0;
     }
 
-    public boolean inside2(Point2D p) {
-        return (this.end.getR1() - this.start.getR1()) * p.getC1() + (this.start.getC1() - this.end.getC1()) * p.getR1() + (this.end.getC1() * this.start.getR1() - this.start.getC1() * this.end.getR1()) > 0.0;
-    }
 
-    public double distance(Point2D p) {
-        return Math.abs(((this.end.getR1() - this.start.getR1()) * p.getC1() - (this.start.getC1() - this.end.getC1()) * p.getR1() + this.end.getC1() * this.start.getR1() - this.start.getC1() * this.end.getR1()) / Math.sqrt((this.end.getR1() - this.start.getR1()) * (this.end.getR1() - this.start.getR1()) + (this.start.getC1() - this.end.getC1()) * (this.start.getC1() - this.end.getC1())));
-    }
 
     public Point2D intersection(Point2D v1, Point2D v2) {
         int px = ((v1.getC1() * v2.getR1() - v1.getR1() * v2.getC1()) * (this.start.getC1() - this.end.getC1()) - (this.start.getC1() * this.end.getR1() - this.start.getR1() * this.end.getC1()) * (v1.getC1() - v2.getC1())) / ((v1.getC1() - v2.getC1()) * (this.start.getR1() - this.end.getR1()) - (this.start.getC1() - this.end.getC1()) * (v1.getR1() - v2.getR1()));
